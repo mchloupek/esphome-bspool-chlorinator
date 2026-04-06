@@ -74,12 +74,13 @@ void BSPoolSensor::handle_message(DataPacket &message) {
       break;
     case FunctionCode::TEMPERATURE_MEASUREMENT:
       if (this->temperature_sensor_ != nullptr) {
-          int temperature = message.data_b2;
-          if (message.data_b3 == 1) {
-            temperature = -temperature;
-          }
-          this->temperature_sensor_->publish_state(temperature == -255 ? NAN : temperature);
+        if (message.data_b3 == 1) {
+          // Sign byte 1 with any value — treat as sensor not connected
+          this->temperature_sensor_->publish_state(NAN);
+        } else {
+          this->temperature_sensor_->publish_state(message.data_b2);
         }
+      }
       break;
     case FunctionCode::HOURS_LOW:
       if (this->hours_of_operation_sensor_ != nullptr) {
