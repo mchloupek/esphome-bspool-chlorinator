@@ -1,5 +1,8 @@
 #pragma once
 
+#include <array>
+#include <deque>
+
 #include "esphome/components/uart/uart.h"
 #include "esphome/core/component.h"
 
@@ -68,10 +71,17 @@ class BSPool : public uart::UARTDevice, public PollingComponent {
     this->listeners_.push_back(listener);
   }
 
+  void enqueue_packet(uint8_t b1, uint8_t b2, uint8_t b3);
+
  protected:
   DataPacket buffer_;
+  uint32_t error_counter{0};
+  bool write_command_enabled_{false};
+  bool cell_current_query_enabled_{false};
 
   std::vector<BSPoolListener *> listeners_{};
+  std::deque<std::array<uint8_t, 7>> send_queue_{};
+  uint32_t last_send_ms_{0};
 };
 
 }  // namespace bs_pool

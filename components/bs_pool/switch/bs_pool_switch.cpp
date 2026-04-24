@@ -80,8 +80,7 @@ void BSPoolSwitch::send_user_state() {
 }
 
 void BSPoolSwitch::send_command(uint8_t code, uint8_t b2, uint8_t b3) {
-  this->parent_->write_array({code, b2, b3});
-  this->parent_->flush();
+  this->parent_->enqueue_packet(code, b2, b3);
 }
 
 }  // namespace bs_pool
